@@ -26,7 +26,7 @@ const PORT = process.env.PORT || 3001;
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: localUrl,
+        origin: deployedUrl,
     },
 });
 
