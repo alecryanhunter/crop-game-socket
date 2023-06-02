@@ -6,7 +6,7 @@ const cors = require("cors");
 const app = express();
 
 const localUrl = process.env.URL || "http://localhost:3000";
-const deployedUrl = "https://Cropposition.netlify.app";
+const deployedUrl = "https://cropposition.netlify.app";
 
 
 // Local
