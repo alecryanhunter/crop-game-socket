@@ -6,19 +6,20 @@ const cors = require("cors");
 const app = express();
 
 const localUrl = process.env.URL || "http://localhost:3000";
+const deployedUrl = "https://cropposition.netlify.app";
 
 
 // Local
-app.use(cors());
+//app.use(cors());
 
-/*
+
 // Deployed
 app.use(
     cors({
-        origin: http:unMadeDeployed.link,
+        origin: deployedUrl,
     })
 );
-*/
+
 
 const PORT = process.env.PORT || 3001;
 
