@@ -27,7 +27,7 @@ const PORT = process.env.PORT || 3001;
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: localUrl,
+        origin: localUrl, // need to change to deployedUrl before pushing
     },
 });
 
@@ -75,8 +75,9 @@ io.on("connection", (socket) => {
   
     // message event
     socket.on("send_message", (data) => {
-      const { room, message } = data;
-      socket.to(room).emit("receive_message", message);
+      const { room, message, author } = data;
+      const messageData = { room, message, author }
+      socket.to(room).emit("receive_message", messageData);
     });
 
     //start game
