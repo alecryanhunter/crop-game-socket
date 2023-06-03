@@ -26,28 +26,83 @@ const PORT = process.env.PORT || 3001;
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: deployedUrl,
+        origin: deployedUrl, // need to change to localUrl before testing
     },
 });
+
+const rooms = {};
+
+const emitUpdatedPlayers = (room) => {
+  io.to(room).emit("players_updated", rooms[room].players);
+};
 
 // handles socket events
 io.on("connection", (socket) => {
     console.log(`User Connected: ${socket.id}`);
 
+    // host game
+    socket.on("create_room", ({ username, room }) => {
+      if(rooms[room] && rooms[room].players && rooms[room].players.length >= 4) {
+        socket.emit("room_full");
+        return;
+      }
+
+      rooms[room] = {
+        host: socket.id,
+        players: [{ id: socket.id, username }],
+        gameStarted: false,
+      };
+
+      socket.join(room);
+      console.log(`user with ID: ${socket.id} created and joined room: ${room}`);
+
+      socket.emit("host_registered", { host: socket.id });
+      console.log(rooms[room].host);
+
+      emitUpdatedPlayers(room);
+    });
+
+    // join game
     socket.on("join_room", (data) => {
-      socket.join(data);
-      console.log(`User with ID: ${socket.id} joined room: ${data}`);
+      const { username, room } = data;
+      if (!rooms[room]) {
+        socket.emit("room_not_found");
+        return;
+      }
+      if (rooms[room].players.length >= 4) {
+        socket.emit("room_full");
+        return;
+      }
+      socket.join(room);
+      rooms[room].players.push({ id: socket.id, username });
+      console.log(`User with ID: ${socket.id} joined room: ${room}`);
+
+      emitUpdatedPlayers(room);
     });
   
-    // message event ------------------------- will need to add events for game play
+    // message event
     socket.on("send_message", (data) => {
-      socket.to(data.room).emit("receive_message", data);
+      const { room, message, author } = data;
+      const messageData = { room, message, author }
+      socket.to(room).emit("receive_message", messageData);
     });
+
+    //start game
+    socket.on("start_game", (room) => {
+      if(socket.id === rooms[room].host) {
+        rooms[room].gameStarted = true;
+        io.to(room).emit("game_started")
+        io.to(room).emit("navigate_to_game");
+      }
+    })
+
+    // game play
+
+    // end game
   
     socket.on("disconnect", () => {
       console.log("User Disconnected", socket.id);
     });
-
 
 });
   
