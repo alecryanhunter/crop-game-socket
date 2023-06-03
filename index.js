@@ -1,4 +1,3 @@
-
 // importing required dependencies and modules
 const { createServer } = require("http");
 const { Server } = require("socket.io");
@@ -11,27 +10,31 @@ const deployedUrl = "https://cropposition.netlify.app";
 
 
 // Local
-app.use(cors());
+//app.use(cors());
 
-/*
+
 // Deployed
 app.use(
     cors({
         origin: deployedUrl,
     })
 );
-*/
+
 
 const PORT = process.env.PORT || 3001;
 
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: localUrl, // need to change to deployedUrl before pushing
+        origin: deployedUrl, // need to change to localUrl before testing
     },
 });
 
 const rooms = {};
+
+const emitUpdatedPlayers = (room) => {
+  io.to(room).emit("players_updated", rooms[room].players);
+};
 
 // handles socket events
 io.on("connection", (socket) => {
@@ -55,6 +58,8 @@ io.on("connection", (socket) => {
 
       socket.emit("host_registered", { host: socket.id });
       console.log(rooms[room].host);
+
+      emitUpdatedPlayers(room);
     });
 
     // join game
@@ -71,6 +76,8 @@ io.on("connection", (socket) => {
       socket.join(room);
       rooms[room].players.push({ id: socket.id, username });
       console.log(`User with ID: ${socket.id} joined room: ${room}`);
+
+      emitUpdatedPlayers(room);
     });
   
     // message event
