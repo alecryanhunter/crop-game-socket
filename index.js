@@ -1,4 +1,3 @@
-
 // importing required dependencies and modules
 const { createServer } = require("http");
 const { Server } = require("socket.io");
@@ -86,6 +85,8 @@ io.on("connection", (socket) => {
       console.log(`User with ID: ${socket.id} joined room: ${room}`);
 
       emitUpdatedPlayers(room);
+
+      socket.emit("join_room_success", { host: rooms[room].host });
     });
   
     // message event
@@ -97,15 +98,19 @@ io.on("connection", (socket) => {
 
     //start game
     socket.on("start_game", (room) => {
-      if(socket.id === room.host) {
+      if(socket.id === rooms[room].host) {
         rooms[room].gameStarted = true;
 
+        io.to(room).emit("game_started");
+
+      }
+    }); 
+    /*
         playerTurn = 1;
-        board = initializeBoard();
+        board = initializeBoard(); // need to add function
         scores = [0, 0];
 
-        io.to(room).emit("game_started")
-        io.to(room).emit("navigate_to_game");
+
         io.to(room).emit("player_turn", playerTurn);
         io.to(room).emit("update_board", board);
         io.to(room).emit("update_scores", scores);
@@ -122,10 +127,10 @@ io.on("connection", (socket) => {
   
       if (isValidMove(board, y, x)) { 
         makeMove(board, y, x, playerTurn); 
-        const pointsScored = calculatePointsScored(board); 
+        const pointsScored = calculatePointsScored(board); //need to add function
         scores[playerTurn - 1] += pointsScored;
   
-        playerTurn = getNextPlayerTurn(playerTurn); 
+        playerTurn = getNextPlayerTurn(playerTurn); // need to add function
 
         io.to(room).emit("player_turn", playerTurn);
         io.to(room).emit("update_board", board);
@@ -140,7 +145,7 @@ io.on("connection", (socket) => {
         }
       }
     });
-  
+  */
     socket.on("disconnect", () => {
       console.log("User Disconnected", socket.id);
     });
