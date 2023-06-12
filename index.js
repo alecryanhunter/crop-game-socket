@@ -7,7 +7,7 @@ const app = express();
 
 const PORT = process.env.PORT || 3001;
 const localUrl = process.env.URL || "http://localhost:3000";
-const deployedUrl = "https://cropposition.herokuapp.com/";
+const deployedUrl = "https://cropposition.herokuapp.com";
 
 // Local
 //app.use(cors());
