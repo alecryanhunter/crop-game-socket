@@ -5,6 +5,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
+const PORT = process.env.PORT || 3001;
 const localUrl = process.env.URL || "http://localhost:3000";
 const deployedUrl = "https://cropposition.herokuapp.com/";
 
@@ -18,18 +19,16 @@ app.use(
     })
 );
 
-const PORT = process.env.PORT || 3001;
-
 const server = createServer(app);
 const io = new Server(server, {
-    cors: {
-        origin: deployedUrl,
-    },
+  cors: {
+    origin: deployedUrl,
+  },
 });
 
 // handles socket events
 io.on("connection", (socket) => {
-    console.log(`User Connected: ${socket.id}`);
+  console.log(`User Connected: ${socket.id}`);
 
     socket.on("join_room", (data) => {
       socket.join(data);
