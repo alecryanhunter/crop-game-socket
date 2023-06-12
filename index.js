@@ -6,7 +6,7 @@ const cors = require("cors");
 const app = express();
 
 const localUrl = process.env.URL || "http://localhost:3000";
-const deployedUrl = "https://cropposition.netlify.app";
+const deployedUrl = "https://cropposition.herokuapp.com/";
 
 
 // Local
@@ -39,7 +39,6 @@ io.on("connection", (socket) => {
       console.log(`User with ID: ${socket.id} joined room: ${data}`);
     });
   
-    // message event ------------------------- will need to add events for game play
     socket.on("send_message", (data) => {
       socket.to(data.room).emit("receive_message", data);
     });
@@ -52,6 +51,6 @@ io.on("connection", (socket) => {
 });
   
   // starts server
-  server.listen(PORT, () => {
-    console.log(`listening on ${PORT} 🚀`);
-  });
+server.listen(PORT, () => {
+  console.log(`listening on ${PORT} 🚀`);
+});
