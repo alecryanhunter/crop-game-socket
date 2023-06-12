@@ -8,10 +8,8 @@ const app = express();
 const localUrl = process.env.URL || "http://localhost:3000";
 const deployedUrl = "https://cropposition.herokuapp.com/";
 
-
 // Local
 //app.use(cors());
-
 
 // Deployed
 app.use(
@@ -19,7 +17,6 @@ app.use(
         origin: deployedUrl,
     })
 );
-
 
 const PORT = process.env.PORT || 3001;
 
@@ -46,11 +43,9 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
       console.log("User Disconnected", socket.id);
     });
-
-
 });
   
-  // starts server
+// starts server
 server.listen(PORT, () => {
   console.log(`listening on ${PORT} 🚀`);
 });
